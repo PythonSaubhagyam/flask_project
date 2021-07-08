@@ -46,17 +46,14 @@ def index():
 def add_into_db():
     # Get IP address
     cursor = conn.cursor()
-    hostname = socket.gethostbyname('facebook.com')
-    # hostname = socket.gethostname()
+    # hostname = socket.gethostbyname('instagram.com')
+    hostname = socket.gethostname()
     IPAddr = socket.gethostbyname(hostname)
-    var = str(IPAddr)
-    first_visit = datetime.now()
 
     #Browser Version  and name 
     browser = request.user_agent.browser
     vers = request.user_agent.version
     
-    last_visit = datetime.now()
     
     #Logic for Counter  
     SQL = "select ip_address from test_project"
@@ -80,17 +77,57 @@ def add_into_db():
                 l1.append(i)
 
     if len(l1)>0:
-        update_db = "Update test_project Set counter = counter + 1 Where ip_address= %s"
-        val2 = (IPAddr,)
+        first_visit_sql = "select first_visit from test_project where ip_address = %s"
+        val3 = (IPAddr,)
+        # cursor.execute(update_db,val2)
+        cursor.execute(first_visit_sql,val3)
+        first_visit = cursor.fetchall()
+        
+        first_visit = re.sub(r"[\[]", "", str(first_visit))
+        first_visit = re.sub(r"[\]]", "", str(first_visit))
+        first_visit = re.sub(r"[,]", "", str(first_visit))
+        first_visit = re.sub(r"[\()]", "", str(first_visit))
+        first_visit = re.sub(r"[']", "", str(first_visit))
+        first_visit = re.sub(r"[\"]", "", str(first_visit))
+           
+        # first_visit = None
+        last_visit = datetime.now()
+        update_db = "Update test_project Set counter = counter + 1,last_visit=%s Where ip_address= %s"
+        val2 = (last_visit,IPAddr)
         cursor.execute(update_db,val2)
+        counter_sql = "select counter from test_project where ip_address=%s"
+        val4 = (IPAddr,)
+        cursor.execute(counter_sql,val4)
+        counter = cursor.fetchall()
+        counter = re.sub(r"[\[]", "", str(counter))
+        counter = re.sub(r"[\]]", "", str(counter))
+        counter = re.sub(r"[,]", "", str(counter))
+        counter = re.sub(r"[\()]", "", str(counter))
+        counter = re.sub(r"[']", "", str(counter))
+        counter = re.sub(r"[\"]", "", str(counter))
+
     else:
+        first_visit = datetime.now()
+        last_visit =datetime.now()
         sql1 = "INSERT INTO test_project(ip_address,browser,browser_version,first_visit,last_visit) VALUES (%s,%s,%s,%s,%s)" # Insert values into database
         val1= (IPAddr,browser,vers,first_visit,last_visit)
         cursor.execute(sql1, val1)
-
+        counter_sql = "select counter from test_project where ip_address=%s"
+        val4 = (IPAddr,)
+        cursor.execute(counter_sql,val4)
+        counter = cursor.fetchall()
+        counter = re.sub(r"[\[]", "", str(counter))
+        counter = re.sub(r"[\]]", "", str(counter))
+        counter = re.sub(r"[,]", "", str(counter))
+        counter = re.sub(r"[\()]", "", str(counter))
+        counter = re.sub(r"[']", "", str(counter))
+        counter = re.sub(r"[\"]", "", str(counter))
+    
+    
     conn.commit()    
-    show_data = {"Ip_address":IPAddr,"browser":browser,"browser_version":vers,"first_visit":first_visit,"last_visit":last_visit}
-    # return jsonify({"Ip_address":IPAddr,"browser":browser,"browser_version":vers,"first_visit":first_visit,"last_visit":last_visit})   
-    return render_template("index.html", show = show_data)
+    show_data = {"Ip_address":IPAddr,"browser":browser,"browser_version":vers,"first_visit":first_visit,"last_visit":last_visit,"counter":counter}
+    # return jsonify({"Ip_address":IPAddr,"browser":browser,"browser_version":vers,,"last_visit":last_visit})   
+    return render_template("index.html",show=show_data)
+    # return render_template("index.html",IP_Address=IPAddr)
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
