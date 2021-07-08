@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    </style>
+<body>
+    <h1>Data Table </h1>
+    <table style="width:100%">
+        <tr>
+          <th>IP_Address</th>
+          <th>Browser</th>
+          <th>Browser_version</th>
+          <th>First_visit</th>
+          <th>Last_visit</th>
+        </tr>
+        <tr>
+          <td>{{ show.Ip_address }}</td>
+          <td>{{ show.browser }}</td>
+          <td>{{ show.browser_version}}</td>
+          <td>{{ show.first_visit }}</td>
+          <td>{{ show.last_visit }}</td>
+        </tr>
+      </table>
+
+</body>
+</html>
