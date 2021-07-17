@@ -1,4 +1,3 @@
-# Import libraries
 from sys import platform
 from typing import Counter
 from flask import Flask, request,jsonify,render_template
@@ -37,24 +36,21 @@ cnxn = mysql.connector.connect(**config)
 '''
 
 
-@app.route('/')
-def index():
-    return "Welcome to programming world!!"
-
-# Function for adding values into database
+# Adding values into database
 @app.route('/add')
 def add_into_db():
     # Get IP address
     cursor = conn.cursor()
+    # For specific Website 
     # hostname = socket.gethostbyname('instagram.com')
+    # For localhost 
     hostname = socket.gethostname()
     IPAddr = socket.gethostbyname(hostname)
 
     #Browser Version  and name 
     browser = request.user_agent.browser
     vers = request.user_agent.version
-    
-    
+   
     #Logic for Counter  
     SQL = "select ip_address from test_project"
     cursor.execute(SQL)
@@ -79,7 +75,6 @@ def add_into_db():
     if len(l1)>0:
         first_visit_sql = "select first_visit from test_project where ip_address = %s"
         val3 = (IPAddr,)
-        # cursor.execute(update_db,val2)
         cursor.execute(first_visit_sql,val3)
         first_visit = cursor.fetchall()
         
@@ -90,7 +85,6 @@ def add_into_db():
         first_visit = re.sub(r"[']", "", str(first_visit))
         first_visit = re.sub(r"[\"]", "", str(first_visit))
            
-        # first_visit = None
         last_visit = datetime.now()
         update_db = "Update test_project Set counter = counter + 1,last_visit=%s Where ip_address= %s"
         val2 = (last_visit,IPAddr)
@@ -123,11 +117,9 @@ def add_into_db():
         counter = re.sub(r"[']", "", str(counter))
         counter = re.sub(r"[\"]", "", str(counter))
     
-    
     conn.commit()    
-    show_data = {"Ip_address":IPAddr,"browser":browser,"browser_version":vers,"first_visit":first_visit,"last_visit":last_visit,"counter":counter}
-    # return jsonify({"Ip_address":IPAddr,"browser":browser,"browser_version":vers,,"last_visit":last_visit})   
+    show_data = {"Ip_address":IPAddr,"browser":browser,"browser_version":vers,"first_visit":first_visit,"last_visit":last_visit,"counter":counter} 
     return render_template("index.html",show=show_data)
-    # return render_template("index.html",IP_Address=IPAddr)
+
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
